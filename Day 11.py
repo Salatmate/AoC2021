@@ -16,7 +16,7 @@ inp = [[-1 for i in range(len(inp[0]))]] + inp + [[-1 for i in range(len(inp[0])
 def done(inp):
     for y in range(1,len(inp)-1):
         for x in range(1,len(inp[y])-1):
-            if inp[y][x] > 9 and inp[y][x] < 100:
+            if inp[y][x] > 9:
                 return False
     return True
 
@@ -37,22 +37,17 @@ def part1(inp):
         while not done(inp):
             for y in range(1,len(inp)-1):
                 for x in range(1,len(inp[y])-1):
-                    if inp[y][x] > 9 and inp[y][x] < 100:
-                        inp[y][x] = 100
-                        if inp[y+1][x+1] >= 0: inp[y+1][x+1] += 1
-                        if inp[y-1][x-1] >= 0: inp[y-1][x-1] += 1
-                        if inp[y+1][x-1] >= 0: inp[y+1][x-1] += 1
-                        if inp[y-1][x+1] >= 0: inp[y-1][x+1] += 1
-                        if inp[y+1][x] >= 0: inp[y+1][x] += 1
-                        if inp[y-1][x] >= 0: inp[y-1][x] += 1
-                        if inp[y][x+1] >= 0: inp[y][x+1] += 1
-                        if inp[y][x-1] >= 0: inp[y][x-1] += 1
-        
-        for y in range(1,len(inp)-1):
-            for x in range(1,len(inp[y])-1):
-                if inp[y][x] >= 100:
-                    inp[y][x] = 0
-                    flashes += 1
+                    if inp[y][x] > 9:
+                        inp[y][x] = 0
+                        flashes += 1
+                        if inp[y+1][x+1] > 0: inp[y+1][x+1] += 1
+                        if inp[y-1][x-1] > 0: inp[y-1][x-1] += 1
+                        if inp[y+1][x-1] > 0: inp[y+1][x-1] += 1
+                        if inp[y-1][x+1] > 0: inp[y-1][x+1] += 1
+                        if inp[y+1][x] > 0: inp[y+1][x] += 1
+                        if inp[y-1][x] > 0: inp[y-1][x] += 1
+                        if inp[y][x+1] > 0: inp[y][x+1] += 1
+                        if inp[y][x-1] > 0: inp[y][x-1] += 1
     print(flashes)
     
 def part2(inp):
@@ -66,22 +61,18 @@ def part2(inp):
         while not done(inp):
             for y in range(1,len(inp)-1):
                 for x in range(1,len(inp[y])-1):
-                    if inp[y][x] > 9 and inp[y][x] < 100:
-                        inp[y][x] = 100
-                        if inp[y+1][x+1] >= 0: inp[y+1][x+1] += 1
-                        if inp[y-1][x-1] >= 0: inp[y-1][x-1] += 1
-                        if inp[y+1][x-1] >= 0: inp[y+1][x-1] += 1
-                        if inp[y-1][x+1] >= 0: inp[y-1][x+1] += 1
-                        if inp[y+1][x] >= 0: inp[y+1][x] += 1
-                        if inp[y-1][x] >= 0: inp[y-1][x] += 1
-                        if inp[y][x+1] >= 0: inp[y][x+1] += 1
-                        if inp[y][x-1] >= 0: inp[y][x-1] += 1
+                    if inp[y][x] > 9:
+                        inp[y][x] = 0
+                        flashes += 1
+                        if inp[y+1][x+1] > 0: inp[y+1][x+1] += 1
+                        if inp[y-1][x-1] > 0: inp[y-1][x-1] += 1
+                        if inp[y+1][x-1] > 0: inp[y+1][x-1] += 1
+                        if inp[y-1][x+1] > 0: inp[y-1][x+1] += 1
+                        if inp[y+1][x] > 0: inp[y+1][x] += 1
+                        if inp[y-1][x] > 0: inp[y-1][x] += 1
+                        if inp[y][x+1] > 0: inp[y][x+1] += 1
+                        if inp[y][x-1] > 0: inp[y][x-1] += 1
         
-        for y in range(1,len(inp)-1):
-            for x in range(1,len(inp[y])-1):
-                if inp[y][x] >= 100:
-                    inp[y][x] = 0
-                    flashes += 1
         if flashes == 100:
             break
     print(step)
