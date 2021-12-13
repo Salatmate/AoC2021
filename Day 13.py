@@ -53,7 +53,7 @@ def part2(inp):
     string = ''
     for y in range(maxy+1):
         for x in range(maxx+1):
-            string += '#' if [x,y] in dots else ' '
+            string += '█' if [x,y] in dots else ' '
         string += '\n'
     print(string)
         
