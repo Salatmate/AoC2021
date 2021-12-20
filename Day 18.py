@@ -104,7 +104,6 @@ def part2(inp):
     greatest = 0
     snailfish = [i for i in snailfish if len(i) > 10]
     depths = [i for i in depths if len(i) > 10]
-    print(len(snailfish))
     for perm in list(itertools.permutations(range(len(snailfish)),2)):
         snails, depth = reduce(snailfish[perm[0]]+snailfish[perm[1]],depths[perm[0]]+depths[perm[1]])
         greatest = max(magnitude(snails,depth),greatest)
