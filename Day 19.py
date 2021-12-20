@@ -149,7 +149,7 @@ from collections import defaultdict
 from copy import deepcopy
 import itertools
 from math import inf
-def overlap(scanner1,scanner2):
+def orientation(scanner1,scanner2,index1,index2):
     orientation = deepcopy(scanner2)
     orientations = [list(itertools.permutations(i)) for i in orientation]
     for direct in range(len(orientations)):
@@ -160,29 +160,37 @@ def overlap(scanner1,scanner2):
             orientations[direct].append((x,-z,y))
             orientations[direct].append((x,-y,-z))
             orientations[direct].append((x,z,-y))
-    for coords in scanner1:
-        for coords2 in orientations:
-            orient = deepcopy(orientations)
-            for i in range(24):
-                matching = []
-                x,y,z = coords
-                x -= coords2[i][0]
-                y -= coords2[i][1]
-                z -= coords2[i][2]
-                for beacons in range(len(orientations)):
-                    orient[beacons][i] = (orient[beacons][i][0]+x,orient[beacons][i][1]+y,orient[beacons][i][2]+z)
-                    if orient[beacons][i] in scanner1:
-                        matching.append(orient[beacons][i])
-                if len(matching) >= 12:
-                    break
-            if len(matching) >= 12:
-                break
-        if len(matching) >= 12:
+    coords = scanner1[index1]
+    coords2 = orientations[index2]
+    orient = deepcopy(orientations)
+    for i in range(24):
+        matching = 0
+        coords1 = tuple(val1-val2 for val1,val2 in zip(coords,coords2[i]))
+        for beacons in range(len(orientations)):
+            orient[beacons][i] = tuple(val1+val2 for val1,val2 in zip(orient[beacons][i],coords1))
+            if orient[beacons][i] in scanner1:
+                matching += 1
+        if matching >= 12:
             break
     orient = [j[i] for j in orient]
     offset = (x,y,z)
-    if len(matching) >= 12: return True, orient, offset
-    return False, orient, offset
+    return orient, offset
+
+def manhattan(a, b):
+    return sum(abs(val1-val2) for val1, val2 in zip(a,b))
+
+def overlap(scanner1,scanner2):
+    for index1,coord1 in enumerate(scanner1):
+        distance1 = set()
+        for i in scanner1:
+            distance1.add(manhattan(coord1,i))
+        for index2,coord2 in enumerate(scanner2):
+            distance2 = set()
+            for i in scanner2:
+                distance2.add(manhattan(coord2,i))
+            if len(distance1 & distance2) >= 12:
+                return True, index1, index2
+    return False, index1, index2
     
 def part1(inp):
     scanners = defaultdict(list)
@@ -199,11 +207,12 @@ def part1(inp):
         done.append(scan)
         for i in range(len(scanners)):
             if i not in done and i not in checked:
-                matched, result, x = overlap(scanners[scan],scanners[i])
+                matched, index1, index2 = overlap(scanners[scan],scanners[i])
                 if matched:
-                    scanners[i] = result
-                    beacon_map += result
                     checked.append(i)
+                    orient, offset = orientation(scanners[scan],scanners[i],index1,index2)
+                    scanners[i] = orient
+                    beacon_map += orient
     beacon_map.sort()
     print(len(list(beacon_map for beacon_map,_ in itertools.groupby(beacon_map))))
                 
@@ -215,7 +224,6 @@ def part2(inp):
     for scanner in range(len(inp)):
         for beacon in inp[scanner].split('\n')[1:]:
             scanners[scanner].append(tuple([int(i) for i in beacon.split(',')]))
-    beacon_map = scanners[0]
     checked = [0]
     done = []
     offsets = []
@@ -224,17 +232,16 @@ def part2(inp):
         done.append(scan)
         for i in range(len(scanners)):
             if i not in done and i not in checked:
-                matched, result, offset = overlap(scanners[scan],scanners[i])
+                matched, index1, index2 = overlap(scanners[scan],scanners[i])
                 if matched:
-                    offsets.append(offset)
-                    scanners[i] = result
                     checked.append(i)
+                    orient, offset = orientation(scanners[scan],scanners[i],index1,index2)
+                    scanners[i] = orient
+                    offsets.append(offset)
     greatest = 0
-    for i in list(itertools.combinations(offsets,2)):
-        distance = abs(i[0][0]-i[1][0])+abs(i[0][1]-i[1][1])+abs(i[0][2]-i[1][2])
-        greatest = max(distance,greatest)
+    for i in itertools.combinations(offsets,2):
+        greatest = max(manhattan(i[0],i[1]),greatest)
     print(greatest)
     
-                
-    
-part2(test2 )
+part1(inp)
+part2(inp)
